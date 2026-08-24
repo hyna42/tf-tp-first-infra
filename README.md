@@ -10,48 +10,42 @@
 
 ```bash
 # Télécharger l'image Ubuntu cloud
-mkdir -p ~/images
-wget -O ~/images/ubuntu-24.04-cloudimg.img \
+mkdir -p ~/var/lib/libvirt/images/base
+wget -O ~/var/lib/libvirt/images/base/noble-server-cloudimg-amd64.img \
   https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
-
 ```
+## Lifecycle
 
+**1. Initier le projet Terraform** : ```terraform init```
+![Configurtion terraform](/assets/init.png)
 
+**2. Vérifier la configuration** : ```terraform validate```
+![alt text](/assets/validate.png)
 
-### Lancer le projet
-```bash
-# 1. Télécharge le provider libvirt et configure le backend .terraform/
-terraform init
+**3. Prévisualiser les changements** : ```terraform plan```
+![alt text](/assets/plan1.png)
+![alt text](/assets/plan2.png)
+**4. Appliquer les changements** : ```terraform apply```
+![alt text](/assets/apply1.png)
+![alt text](/assets/apply2.png)
 
-# 2. Vérifie la configuration de l'infrastructure
-terraform validate
+**5. Test : afficher les ressources crées**
+![alt text](/assets/state_list.png) 
+**6. Test: inspecter une ressoure <libvirt_domain.vm>**
+![alt text](/assets/state_show.png)
 
-# 3. Prévisualiser les changements
-terraform plan
+**6. Détruire proprement l'infra** : ```terraform destroy -auto-approve```
 
-# 4. Appliquer les changements
-terraform apply
+## Gérer les VMs avec libvirt 
+> Vérifier l'état des VMs : 
+```virsh list --all``` 
+![alt text](/assets/virsh_list.png) 
 
+***Démarrer la VM** : ```virsh start <name>```
+![alt text](/assets/virsh_start.png)
 
-```
-### Observer le résultat via libvirt
-```bash
-# 1. Démarrer le moteur
-virsh start first-infra-vm # first-infra-vm = nom de la VM
-# 2. Vérifer que la VM existe dans Libvirt
-virsh list --all # doit afficher 'first-infra-vm' en statut "Running"
-# 3. Verifier le volume disque
-virsh vol-list default | grep first # disk name = first_infra.qcow2
-```
+***Démarrer la VM** : ```virsh start ```
+![alt text](/assets/virsh_start.png)
 
-### 
-```bash
-# 1. Explorer le state (le sate mémorise les ressources crées par Terraform)
-terraform state list # doit afficher 'libvirt_domain.vm'  et 'libvirt_volume.disk'
-# 2. Pour inspecter une ressource en détail (la vm par exemple)
-terraform state show libvirt_domain.vm
-```
-
-### Détruire proprement l'infrastructure
-```bash
-terraform destroy -auto-approve
+*** Vérifier le volume disque***
+![alt text](/assets/virsh_vol_list.png)
