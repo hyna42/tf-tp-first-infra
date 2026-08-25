@@ -41,20 +41,20 @@ wget -O ~/var/lib/libvirt/images/base/noble-server-cloudimg-amd64.img \
 ```virsh list --all``` 
 ![alt text](/assets/virsh_list.png) 
 
-**_Démarrer la VM_** : ```virsh start <name>```
+_Démarrer la VM_ : ```virsh start <name>```
 ![alt text](/assets/virsh_start.png)
 
 ### Domaine (VM)
-**_Informations détaillées_** : ```virsh dominfo <name>```
+_Informations détaillées_ : ```virsh dominfo <name>```
 ![alt text](/assets/virsh_start.png)
-**_Voir les Interfaces réseau_**: ```virsh domiflit <name>```
+_Voir les Interfaces réseau_: ```virsh domiflit <name>```
 ![alt text](/assets/virsh_domiflist.png)
 
-**_Informations détaillées de la VM_**: ```virsh dominfo <name>```
+_Informations détaillées de la VM_: ```virsh dominfo <name>```
 ![alt text](/assets/dominfo.png)
 
 ### Pools Volume
-**_Vérifier le volume_**
+_Vérifier le volume_
 ![alt text](/assets/virsh_vol_list.png)
 
 ### Network
