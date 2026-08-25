@@ -66,7 +66,7 @@ _Afficher la configuration complète du réseau_ : ```virsh net-dumpxml <name>``
 _Afficher le bail DHCP pour récupérer l'IP_ : ```virsh net-dhcp-leases <network_name>```
 ![alt text](/assets/found-ip.png)
 
-_Connexion SSH à la VM_: ````ssh ubuntu@<IP>```
+_Connexion SSH à la VM_: ```ssh ubuntu@<IP>```
 ![alt text](/assets/ssh-connect.png)
 ### Testes de commandes sur la vm
 ![alt text](/assets/ssh-connect-test1.png)
