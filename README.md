@@ -58,3 +58,7 @@ _Vérifier le volume_
 ![alt text](/assets/virsh_vol_list.png)
 
 ### Network
+_Vérifier que le réseau privé existe dans libvirt_ : ```virsh net-list --all```
+![alt text](/assets/virsh_net-list-all.png)
+_Afficher la configuration complète du réseau_ : ```virsh net-dumpxml <name>```
+![alt text](/assets/virsh_net-dumpxml.png)

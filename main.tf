@@ -1,8 +1,27 @@
-# --- Volume disk ---
 locals {
   vm_name  = "lab-vm"
   hostname = "webserver"
 }
+# --- DHCP Network ---
+resource "libvirt_network" "lab_net" {
+  name      = "lab-net"
+  autostart = false
+  forward = {
+    mode = "nat"
+  }
+  ips = [{
+    address = "10.20.0.1"
+    netmask = "255.255.255.0"
+    dhcp = {
+      ranges = [{
+        start = "10.20.0.100", end = "10.20.0.200"
+      }]
+    }
+
+  }]
+}
+
+# --- Volume disk ---
 resource "libvirt_volume" "disk" {
   name = "${local.vm_name}.qcow2" # file name in the pool
   pool = "default"                # target pool (default = /var/lib/libvirt/images)
@@ -91,16 +110,20 @@ resource "libvirt_domain" "vm" {
 
     ]
     interfaces = [
+      # {
+      #   type = "network"
+      #   model = {
+      #     type = "virtio"
+      #   }
+      #   source = {
+      #     network = {
+      #       network = "default" # Libvirt default network
+      #     }
+      #   }
+      # },
       {
-        type = "network"
-        model = {
-          type = "virtio"
-        }
-        source = {
-          network = {
-            network = "default" # Libvirt network by default
-          }
-        }
+        model  = { type = "virtio" }
+        source = { network = { network = libvirt_network.lab_net.name } } # Private DHCP network - dynamic reference
       }
     ]
   }
