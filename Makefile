@@ -1,3 +1,6 @@
+validate:
+	@terraform validate
+
 plan:
 	@terraform plan
 
