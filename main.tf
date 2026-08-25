@@ -1,7 +1,11 @@
 # --- Volume disk ---
+locals {
+  vm_name  = "lab-vm"
+  hostname = "webserver"
+}
 resource "libvirt_volume" "disk" {
-  name = "first_infra.qcow2" # file name in the pool
-  pool = "default"           # target pool (default = /var/lib/libvirt/images)
+  name = "${local.vm_name}.qcow2" # file name in the pool
+  pool = "default"                # target pool (default = /var/lib/libvirt/images)
   target = {
     format = {
       type = "qcow2" # disk format
@@ -11,17 +15,45 @@ resource "libvirt_volume" "disk" {
   create = {
     content = {
       url = "/var/lib/libvirt/images/base/noble-server-cloudimg-amd64.img" # Image source local
+
     }
   }
 }
 
+# --- Cloud-init : génération de l'ISO Cloud-Init (mémoire vive) ---
+resource "libvirt_cloudinit_disk" "init" {
+  name = "${local.vm_name}-init.iso"
+  user_data = templatefile("${path.module}/cloud-init/user-data.yaml", {
+    ssh_key  = trimspace(file(pathexpand("~/.ssh/id_ed25519.pub")))
+    hostname = local.hostname, #variable passé au template
+  })
+  meta_data = yamlencode({
+    instance-id    = "${local.vm_name}-01"
+    local-hostname = "${local.hostname}"
+  })
+}
+
+# --- Cloud-init : création du volume physique contenant l'ISO ---
+resource "libvirt_volume" "cloudinit" {
+  name = "${local.vm_name}-cloudinit-config"
+  pool = "default"
+  create = {
+    content = {
+      url = libvirt_cloudinit_disk.init.path
+    }
+  }
+}
+
+
+
 # --- Domaine (VM) ---
 resource "libvirt_domain" "vm" {
-  name        = "first-infra-vm" # VM name in libvirt
-  type        = "kvm"            # Hyperviseur (KVM)
+  name        = local.vm_name # VM name in libvirt
+  type        = "kvm"         # Hyperviseur (KVM)
   memory      = 512
   memory_unit = "MiB"
   vcpu        = 1 # vCPUs number
+
 
   os = {
     type         = "hvm"    # Hardware Virtual Machine
@@ -31,6 +63,7 @@ resource "libvirt_domain" "vm" {
 
   devices = {
     disks = [
+      # OS - Disk
       {
         source = {
           file = {
@@ -41,10 +74,25 @@ resource "libvirt_domain" "vm" {
           dev = "vda"
           bus = "virtio" # Disque principal virtio
         }
+        driver = { name = "qemu", type = "qcow2" }
+      },
+      # Cloud-init disk
+      {
+        device = "cdrom"
+        driver = { name = "qemu", type = "raw" }
+        source = {
+          file = {
+            file = libvirt_volume.cloudinit.path # Volume reference
+          }
+
+        }
+        target = { dev = "sda", bus = "sata" }
       }
+
     ]
     interfaces = [
       {
+        type = "network"
         model = {
           type = "virtio"
         }
@@ -56,4 +104,8 @@ resource "libvirt_domain" "vm" {
       }
     ]
   }
+
+  running = true
+
 }
+

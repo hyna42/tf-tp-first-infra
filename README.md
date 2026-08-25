@@ -16,36 +16,45 @@ wget -O ~/var/lib/libvirt/images/base/noble-server-cloudimg-amd64.img \
 ```
 ## Lifecycle
 
-**1. Initier le projet Terraform** : ```terraform init```
+**_1. Initier le projet Terraform_** : ```terraform init```
 ![Configurtion terraform](/assets/init.png)
 
-**2. Vérifier la configuration** : ```terraform validate```
+**_2. Vérifier la configuration_** : ```terraform validate```
 ![alt text](/assets/validate.png)
 
-**3. Prévisualiser les changements** : ```terraform plan```
+**_3. Prévisualiser les changements_** : ```terraform plan```
 ![alt text](/assets/plan1.png)
 ![alt text](/assets/plan2.png)
-**4. Appliquer les changements** : ```terraform apply```
+**_4. Appliquer les changements_** : ```terraform apply```
 ![alt text](/assets/apply1.png)
 ![alt text](/assets/apply2.png)
 
-**5. Test : afficher les ressources crées**
+**_5. Test : afficher les ressources crées_**
 ![alt text](/assets/state_list.png) 
-**6. Test: inspecter une ressoure <libvirt_domain.vm>**
+**_6. Test: inspecter une ressoure <libvirt_domain.vm>_**
 ![alt text](/assets/state_show.png)
 
-**6. Détruire proprement l'infra** : ```terraform destroy -auto-approve```
+**_6. Détruire proprement l'infra_** : ```terraform destroy -auto-approve```
 
 ## Gérer les VMs avec libvirt 
 > Vérifier l'état des VMs : 
 ```virsh list --all``` 
 ![alt text](/assets/virsh_list.png) 
 
-***Démarrer la VM** : ```virsh start <name>```
+**_Démarrer la VM_** : ```virsh start <name>```
 ![alt text](/assets/virsh_start.png)
 
-***Démarrer la VM** : ```virsh start ```
+### Domaine (VM)
+**_Informations détaillées_** : ```virsh dominfo <name>```
 ![alt text](/assets/virsh_start.png)
+**_Voir les Interfaces réseau_**: ```virsh domiflit <name>```
+![alt text](/assets/virsh_domiflist.png)
 
-*** Vérifier le volume disque***
+**_Informations détaillées de la VM_**: ```virsh dominfo <name>```
+![alt text](/assets/dominfo.png)
+
+### Pools Volume
+**_Vérifier le volume_**
 ![alt text](/assets/virsh_vol_list.png)
+
+### Network
