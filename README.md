@@ -1,7 +1,7 @@
 # Infra Terraform x KVM/libvirt
 
 ## Prérequis
-
+(update)
 - Terraform ≥ 1.11
 - KVM/libvirt opérationnel
 - Image Ubuntu 24.04 cloud disponible
