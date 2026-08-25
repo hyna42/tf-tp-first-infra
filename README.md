@@ -62,3 +62,12 @@ _Vérifier que le réseau privé existe dans libvirt_ : ```virsh net-list --all`
 ![alt text](/assets/virsh_net-list-all.png)
 _Afficher la configuration complète du réseau_ : ```virsh net-dumpxml <name>```
 ![alt text](/assets/virsh_net-dumpxml.png)
+
+_Afficher le bail DHCP pour récupérer l'IP_ : ```virsh net-dhcp-leases <network_name>```
+![alt text](/assets/found-ip.png)
+
+_Connexion SSH à la VM_: ````ssh ubuntu@<IP>```
+![alt text](/assets/ssh-connect.png)
+### Testes de commandes sur la vm
+![alt text](/assets/ssh-connect-test1.png)
+![alt text](/assets/ssh-connect-test2.png)

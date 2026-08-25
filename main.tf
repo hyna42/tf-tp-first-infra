@@ -63,8 +63,6 @@ resource "libvirt_volume" "cloudinit" {
   }
 }
 
-
-
 # --- Domaine (VM) ---
 resource "libvirt_domain" "vm" {
   name        = local.vm_name # VM name in libvirt
