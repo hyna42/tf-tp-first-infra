@@ -18,4 +18,8 @@ list:
 ping:
 	@ansible all -m ansible.builtin.ping
 
-#
+nginx-install:
+	@ansible-playbook playbook/nginx.yml
+
+nginx-uninstall:
+	@ansible-playbook playbook/uninstalled_nginx.yml
