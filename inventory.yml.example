@@ -1,0 +1,7 @@
+---
+# inventory.yml.example
+plugin: cloud.terraform.terraform_provider
+
+# --- binary_path 
+# Chemin absolu vers l'exécutable "terraform" sur CETTE machine.
+binary_path: /path/to/terraform

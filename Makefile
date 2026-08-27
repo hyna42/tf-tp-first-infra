@@ -1,3 +1,5 @@
+fmt:
+	@terraform fmt
 validate:
 	@terraform validate
 
@@ -10,3 +12,10 @@ apply:
 destroy:
 	@terraform destroy -auto-approve
 
+# ANSIBLE
+list:
+	@ansible-inventory --list
+ping:
+	@ansible all -m ansible.builtin.ping
+
+#
