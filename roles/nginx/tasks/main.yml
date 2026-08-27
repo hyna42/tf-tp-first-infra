@@ -1,6 +1,6 @@
 ---
 # install nginx
-- name: Installer nginx
+- name: "Installer nginx  ::: {{ipv4_address}}"
   ansible.builtin.apt:
     update_cache: true
     name: nginx

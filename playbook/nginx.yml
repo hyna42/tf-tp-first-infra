@@ -4,5 +4,8 @@
   become: true
   gather_facts: true
 
+  vars:
+    ipv4_address: "{{ ansible_facts['default_ipv4']['address'] }}"
+
   roles:
     - nginx
