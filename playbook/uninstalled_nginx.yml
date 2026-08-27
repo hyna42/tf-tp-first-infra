@@ -1,0 +1,8 @@
+---
+- name : Désinstaller le serveur web (nginx)
+  hosts: webservers
+  become: true
+  gather_facts: true
+
+  roles:
+    - uninstalled_nginx
