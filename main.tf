@@ -2,7 +2,7 @@
 # --- DHCP Network ---
 resource "libvirt_network" "lab_net" {
   name      = local.network_name
-  autostart = false
+  autostart = true
   forward = {
     mode = "nat"
   }
@@ -30,26 +30,30 @@ resource "libvirt_volume" "disk" {
 
   create = {
     content = {
-      url = var.image_path
+      url = var.image_path # copie l'image de base
 
     }
   }
 }
-
-# --- Cloud-init : génération de l'ISO Cloud-Init (mémoire vive) ---
+# *********************** cloudinit ***********************
+# --- Cloud-init ISO Cloud-Init ---
 resource "libvirt_cloudinit_disk" "init" {
   name = local.ci_disk_name
   user_data = templatefile(local.ci_user_data_path, {
-    ssh_key  = trimspace(file(pathexpand(var.ssh_key_path)))
-    hostname = var.hostname, #variable passé au template
+    ssh_public_key = trimspace(file(pathexpand(var.path_ssh_public_key)))
+    hostname       = var.hostname
+    user_name      = var.user_name
   })
+
+  network_config = file("${path.module}/network-config.yml")
+
   meta_data = yamlencode({
     instance-id    = "${var.vm_name}"
     local-hostname = "${var.hostname}"
   })
 }
 
-# --- Cloud-init : création du volume physique contenant l'ISO ---
+# --- Cloud-init ISO Volume ---
 resource "libvirt_volume" "cloudinit" {
   name = local.ci_volume_name
   pool = var.pool
@@ -59,6 +63,8 @@ resource "libvirt_volume" "cloudinit" {
     }
   }
 }
+
+# *********************** cloudinit ***********************
 
 # --- Domaine (VM) ---
 resource "libvirt_domain" "vm" {
@@ -100,7 +106,8 @@ resource "libvirt_domain" "vm" {
           }
 
         }
-        target = { dev = "sda", bus = "sata" }
+        target    = { dev = "sda", bus = "sata" }
+        read_only = true
       }
 
     ]
@@ -118,7 +125,7 @@ resource "libvirt_domain" "vm" {
       # },
       {
         model  = { type = "virtio" }
-        source = { network = { network = libvirt_network.lab_net.name } } # Private DHCP network - dynamic reference
+        source = { network = { network = libvirt_network.lab_net.name } } # Private network
       }
     ]
   }
@@ -127,3 +134,21 @@ resource "libvirt_domain" "vm" {
 
 }
 
+# --- Iventaire Ansible ---
+resource "ansible_group" "webservers" {
+  name = "webservers" # Nom du groupe dans l'inventaire
+}
+
+resource "ansible_host" "host" {
+  name   = "web0.lab"                      # Nom de l'hôte
+  groups = [ansible_group.webservers.name] # Appartenance au groupe
+
+  variables = {
+    ansible_host                 = "10.20.0.42"  # IP fixe de la VM
+    ansible_user                 = var.user_name # user SSH
+    ansible_ssh_private_key_file = pathexpand(var.path_ssh_private_key)
+    ansible_ssh_common_args      = "-o StrictHostKeyChecking=no"
+    ansible_python_interpreter   = "/usr/bin/python3.12"
+  }
+}
+# ssh -o StrictHostKeyChecking=no -i /home/hyna/.ssh/id_ed25519 ansible@10.20.0.42

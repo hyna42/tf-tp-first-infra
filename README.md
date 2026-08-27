@@ -1,82 +1,103 @@
-# Infra Terraform x KVM/libvirt
+# Infra Terraform x KVM/libvirt x Ansible
 
 ## Prérequis
+<<<<<<< HEAD
 - Terraform ≥ 1.11
+=======
+
+- Terraform ≥ 1.15
+>>>>>>> tf-ansible
 - KVM/libvirt opérationnel
 - Image Ubuntu 24.04 cloud disponible
-
-### Télécharger l'image si elle est absente
-
-```bash
-# Télécharger l'image Ubuntu cloud
-mkdir -p ~/var/lib/libvirt/images/base
-wget -O ~/var/lib/libvirt/images/base/noble-server-cloudimg-amd64.img \
-  https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img
-
-```
 
 ## Structure du projet
 
 ```text
 tp-first-infra/
-├── versions.tf       # Provider et version Terraform
-├── variables.tf      # Déclarations des variables d'entrée
-├── locals.tf         # Valeurs calculées (vm_name, hostname...)
-├── main.tf           # Ressources libvirt (network, volume, cloudinit, domain)
-├── outputs.tf         # Ce que Terraform affiche après apply
-├── terraform.tfvars   # Valeurs concrètes (surchargent les defaults)
-├── Makefile           # Raccourcis pour les commandes courantes
-└── cloud-init/
-    └── user-data.yaml  # Configuration cloud-init (hostname, user, clé SSH)
+├── versions.tf              # Providers requis
+├── variables.tf             # Variables d'entrée
+├── locals.tf                # Valeurs calculées
+├── main.tf                  # VM + Cloudinit + Inventaire ansible
+├── outputs.tf               # Sorties
+├── terraform.tfvars         # Valeurs concrètes
+├── Makefile                 # Raccourcis commandes courantes
+├── cloud-init.yml           # Configuration premier boot
+├── network-config.yml       # Réseau statique pour cloud-init
+├── inventory.yml            # Inventaire Ansible
+├── playbook/
+│   ├── nginx.yml            # Playbook Ansible - install nginx
+│   └── uninstalled_nginx.yml # Playbook Ansible - désinstalle nginx
+└── roles/
+    ├── nginx/               # Rôle Ansible - install nginx
+    └── nginx-uninstall/     # Rôle Ansible - désinstalle nginx
 ```
 
-## Quick Start (si vous êtes pressé)
 
-Un `Makefile` regroupe les commandes du cycle de vie courant :
+## Commandes Makefile
 
-```makefile
-validate:
-	@terraform validate
+### Terraform
 
-plan:
-	@terraform plan
+| Commande | Description |
+|----------|-------------|
+| `make fmt` | Formate les fichiers Terraform |
+| `make validate` | Valide la configuration Terraform |
+| `make plan` | Affiche le plan d'exécution Terraform |
+| `make apply` | Applique la configuration Terraform (auto-approve) |
+| `make destroy` | Détruit l'infrastructure Terraform (auto-approve) |
 
-apply:
-	@terraform apply -auto-approve
+### Ansible
 
-destroy:
-	@terraform destroy -auto-approve
-```
+| Commande | Description |
+|----------|-------------|
+| `make list` | Affiche l'inventaire Ansible |
+| `make ping` | Teste la connectivité avec tous les hôtes |
+| `make nginx-install` | Installe et configure nginx sur les serveurs web |
+| `make nginx-uninstall` | Désinstalle nginx des serveurs web |
+
+### Exemples d'utilisation
 
 ```bash
-make validate   # équivalent : terraform validate
-make plan       # équivalent : terraform plan
-make apply      # équivalent : terraform apply -auto-approve
-make destroy    # équivalent : terraform destroy -auto-approve
+# Terraform
+make fmt        # Formate les fichiers Terraform
+make validate   # Valide la configuration Terraform
+make plan       # Affiche le plan d'exécution
+make apply      # Applique la configuration (auto-approve)
+make destroy    # Détruit l'infrastructure (auto-approve)
+
+# Ansible
+make list       # Affiche l'inventaire Ansible
+make ping       # Teste la connectivité SSH avec les hôtes
+make nginx-install    # Installe nginx sur les serveurs
+make nginx-uninstall  # Désinstalle nginx des serveurs
 ```
 
 > Pratique une fois la logique de chaque commande bien comprise (voir la partie Lifecycle ci-dessous) — l'objectif ici n'est pas de mettre `make` en avant, juste de gagner du temps au quotidien.
 
-## Lifecycle détaillé Terraform
+## Lifecycle détaillé
 
-**_1. Initier le projet Terraform_** : ```terraform init```
+> Se reporter à la branche  **_[minimum-vm](https://github.com/hyna42/tf-tp-first-infra/tree/minim-vm)_**  pour la mise en place du VM + Network + Cloudinit, ensuite tester que les phases Terraform [init + validate + plan + appy ] fonctionnent
 
-![Configurtion terraform](/assets/init.png)
+**_1. [Re]appliquer les changements_** : ```terraform apply```
 
-**_2. Vérifier la configuration_** : ```terraform validate```
+![alt text](/assets/apply_netstart.png)
+**Activer le réseau si state=inactve** : ``virsh net-start lab-net``
 
-![alt text](/assets/validate.png)
 
-**_3. Prévisualiser les changements_** : ```terraform plan```
+**_2. Tester la connexon ssh_** : ```ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_ed25519 <user_name>@<IP> "hostname"```
 
-![alt text](/assets/plan1.png)
+**_3. Vérifier l'inventaire dynamique_** : ```ansible-inventory --list```
+![alt text](/assets/inventory_list.png)
 
-![alt text](/assets/plan2.png)
+**_4. Tester la connectivité_** : ```ansible all -m ansible.builtin.ping```
+![alt text](/assets/ping.png)
 
-**_4. Appliquer les changements_** : ```terraform apply```
+**_5. Installer le service nginx + Vérifier l'idempotence_** : ```ansible-playbook playbook/nginx.yml```
+![alt text](/assets/nginx-install.png)
 
-![alt text](/assets/apply1.png)
+**_6. Desintaller nginx + Vérifier l'idempotence_** : ```ansible-playbook playbook/uninstalled_nginx.yml```
+![alt text](/assets/nginx-uninstall.png)
 
+<<<<<<< HEAD
 ![alt text](/assets/apply2.png)
 
 **_5. Test : afficher les ressources crées_**
@@ -138,3 +159,5 @@ _Connexion SSH à la VM_: ```ssh ubuntu@<IP>```
 ![alt text](/assets/ssh-connect-test1.png)
 
 ![alt text](/assets/ssh-connect-test2.png)
+=======
+>>>>>>> tf-ansible

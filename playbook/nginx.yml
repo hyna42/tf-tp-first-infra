@@ -1,0 +1,11 @@
+---
+- name: Configurer le serveur web (nginx)
+  hosts: webservers
+  become: true
+  gather_facts: true
+
+  vars:
+    ipv4_address: "{{ ansible_facts['default_ipv4']['address'] }}"
+
+  roles:
+    - nginx

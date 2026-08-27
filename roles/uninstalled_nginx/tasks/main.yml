@@ -1,0 +1,13 @@
+---
+# uninstall nginx
+- name: Désactiver et Arrêter nginx
+  ansible.builtin.service:
+    name: nginx
+    state: stopped
+    enabled: no
+
+- name: Désinstallerle paquet nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: absent
+    purge: yes
