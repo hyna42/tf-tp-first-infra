@@ -1,12 +1,8 @@
 # Infra Terraform x KVM/libvirt x Ansible
 
 ## Prérequis
-<<<<<<< HEAD
-- Terraform ≥ 1.11
-=======
 
 - Terraform ≥ 1.15
->>>>>>> tf-ansible
 - KVM/libvirt opérationnel
 - Image Ubuntu 24.04 cloud disponible
 
@@ -97,67 +93,3 @@ make nginx-uninstall  # Désinstalle nginx des serveurs
 **_6. Desintaller nginx + Vérifier l'idempotence_** : ```ansible-playbook playbook/uninstalled_nginx.yml```
 ![alt text](/assets/nginx-uninstall.png)
 
-<<<<<<< HEAD
-![alt text](/assets/apply2.png)
-
-**_5. Test : afficher les ressources crées_**
-
-![alt text](/assets/state_list.png) 
-
-**_6. Test: inspecter une ressoure <libvirt_domain.vm>_**
-
-![alt text](/assets/state_show.png)
-
-**_6. Détruire proprement l'infra_** : ```terraform destroy -auto-approve```
-
-## Gérer les VMs avec libvirt 
-> Vérifier l'état des VMs : 
-```virsh list --all``` 
-
-![alt text](/assets/virsh_list.png) 
-
-_Démarrer la VM_ : ```virsh start <name>```
-
-![alt text](/assets/virsh_start.png)
-
-### Domaine (VM)
-_Informations détaillées_ : ```virsh dominfo <name>```
-
-![alt text](/assets/virsh_start.png)
-
-_Voir les Interfaces réseau_: ```virsh domiflist <name>```
-
-![alt text](/assets/virsh_domiflist.png)
-
-_Informations détaillées de la VM_: ```virsh dominfo <name>```
-
-![alt text](/assets/dominfo.png)
-
-### Pools Volume
-_Vérifier le volume_
-
-![alt text](/assets/virsh_vol_list.png)
-
-### Network
-_Vérifier que le réseau privé existe dans libvirt_ : ```virsh net-list --all```
-
-![alt text](/assets/virsh_net-list-all.png)
-
-_Afficher la configuration complète du réseau_ : ```virsh net-dumpxml <name>```
-
-![alt text](/assets/virsh_net-dumpxml.png)
-
-_Afficher le bail DHCP pour récupérer l'IP_ : ```virsh net-dhcp-leases <network_name>```
-
-![alt text](/assets/found-ip.png)
-
-_Connexion SSH à la VM_: ```ssh ubuntu@<IP>```
-
-![alt text](/assets/ssh-connect.png)
-
-### Testes de commandes sur la vm
-![alt text](/assets/ssh-connect-test1.png)
-
-![alt text](/assets/ssh-connect-test2.png)
-=======
->>>>>>> tf-ansible
