@@ -1,7 +1,8 @@
 .terraform/
-terraform.tfstate
-terraform.tfstate.*
+*.tfstate
+*.tfstate.*
 .terraform.tfstate.lock.info
+tfplan
 *.tfplan
 *.tfvars
 !.terraform.lock.hcl
