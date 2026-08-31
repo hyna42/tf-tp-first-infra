@@ -12,8 +12,10 @@ apply:
 destroy:
 	@terraform destroy -auto-approve
 
+state-list:
+	@terraform state list
 # ANSIBLE
-list:
+inv-list:
 	@ansible-inventory --list
 ping:
 	@ansible all -m ansible.builtin.ping
