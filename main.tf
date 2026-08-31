@@ -1,21 +1,7 @@
-
-# --- DHCP Network ---
-resource "libvirt_network" "lab_net" {
-  name      = local.network_name
-  autostart = true
-  forward = {
-    mode = "nat"
-  }
-  ips = [{
-    address = "10.20.0.1"
-    netmask = "255.255.255.0"
-    dhcp = {
-      ranges = [{
-        start = "10.20.0.100", end = "10.20.0.200"
-      }]
-    }
-
-  }]
+module "lab-network" {
+  source       = "./modules/lab-network"
+  cidr         = "10.20.0.0/24"
+  network_name = "lab-net"
 }
 
 # --- Volume disk ---
@@ -112,20 +98,9 @@ resource "libvirt_domain" "vm" {
 
     ]
     interfaces = [
-      # {
-      #   type = "network"
-      #   model = {
-      #     type = "virtio"
-      #   }
-      #   source = {
-      #     network = {
-      #       network = "default" # Libvirt default network
-      #     }
-      #   }
-      # },
       {
         model  = { type = "virtio" }
-        source = { network = { network = libvirt_network.lab_net.name } } # Private network
+        source = { network = { network = module.lab-network.network_name } } # Private network
       }
     ]
   }
@@ -151,4 +126,9 @@ resource "ansible_host" "host" {
     ansible_python_interpreter   = "/usr/bin/python3.12"
   }
 }
-# ssh -o StrictHostKeyChecking=no -i /home/hyna/.ssh/id_ed25519 ansible@10.20.0.42
+# Historiques des renommages
+moved {
+  from = libvirt_network.lab_net
+  to = module.lab-network.libvirt_network.this
+}
+
