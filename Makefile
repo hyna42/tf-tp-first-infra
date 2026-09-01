@@ -1,5 +1,8 @@
+init:
+	@terraform init
+
 fmt:
-	@terraform fmt
+	@terraform fmt -recursive
 validate:
 	@terraform validate
 
